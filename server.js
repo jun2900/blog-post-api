@@ -18,8 +18,11 @@ var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error"));
 
 app.get("/", (req, res) => {
-  res.send("telur");
+  res.send("root");
 });
+
+//Main route
+require("./routes/auth.routes")(app);
 
 app.listen(port, () => {
   console.log(`Your listening to http://localhost:${port}`);
