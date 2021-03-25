@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 
 const CommentSchema = new Schema({
   content: { type: String, required: true },
-  date: Date,
   post: { type: Schema.Types.ObjectId, ref: "Post", required: true },
 });
 
-module.exports = mongoose.model("Comment", CommentSchema);
+module.exports = mongoose.schema("Comment", CommentSchema);
