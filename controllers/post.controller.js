@@ -17,10 +17,30 @@ exports.get_post_detail = async (req, res) => {
   });
 };
 
-exports.get_all_posts = async (req, res) => {
-  const post = await Post.find();
+exports.get_all_published_posts = async (req, res) => {
+  const post = await Post.find({ publish: true });
   res.json({
     title: post.title,
     date: post.date.toDateString(),
+  });
+};
+
+exports.create_post = async (req, res) => {
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content,
+    publish: req.body.publish,
+    date: new Date(),
+    user: {
+      _id: req.body.userId,
+    },
+  });
+
+  post.save((err) => {
+    if (err) {
+      return res.status(500).send({
+        message: "Invalid input",
+      });
+    }
   });
 };
