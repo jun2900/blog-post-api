@@ -82,3 +82,14 @@ exports.update_post = (req, res) => {
     res.send(thePost);
   });
 };
+
+exports.delete_post = (req, res) => {
+  Post.findByIdAndDelete(req.params.id, (err) => {
+    if (err) {
+      return res.status(500).send({
+        message: err,
+      });
+    }
+    res.send({ message: `Post has been deleted` });
+  });
+};

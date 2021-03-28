@@ -1,5 +1,5 @@
 const controller = require("../controllers/post.controller");
-const authJWT = require("../middleware/authJWT");
+const { authJWT, verifyDatabase } = require("../middleware");
 
 module.exports = (app) => {
   app.use((req, res, next) => {
@@ -20,5 +20,16 @@ module.exports = (app) => {
   app.post("/post/create", authJWT.verifyToken, controller.create_post);
 
   //Update post
-  app.put("/post/:id", authJWT.verifyToken, controller.update_post);
+  app.put(
+    "/post/:id",
+    [authJWT.verifyToken, verifyDatabase.authorizedUser],
+    controller.update_post
+  );
+
+  //Delete post
+  app.delete(
+    "/post/:id",
+    [authJWT.verifyToken, verifyDatabase.authorizedUser],
+    controller.delete_post
+  );
 };
