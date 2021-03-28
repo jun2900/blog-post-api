@@ -1,5 +1,24 @@
 const controller = require("../controllers/post.controller");
+const authJWT = require("../middleware/authJWT");
 
 module.exports = (app) => {
-  app.get("/posts", controller.get_all_posts);
+  app.use((req, res, next) => {
+    res.header(
+      "Access-Control-Allow-Headers",
+      "x-access-token, Origin, Content-Type, Accept"
+    );
+    next();
+  });
+
+  //Get all published posts
+  app.get("/", controller.get_all_published_posts);
+
+  //Get detailed posts
+  app.get("/post/:id", controller.get_post_detail);
+
+  //Create post
+  app.post("/post/create", authJWT.verifyToken, controller.create_post);
+
+  //Update post
+  app.put("/post/:id", authJWT.verifyToken, controller.update_post);
 };

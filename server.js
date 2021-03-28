@@ -17,10 +17,6 @@ mongoose.connect(process.env.MONGODB_URI, {
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error"));
 
-app.get("/", (req, res) => {
-  res.send("root");
-});
-
 //Main route
 require("./routes/auth.routes")(app);
 require("./routes/post.routes")(app);

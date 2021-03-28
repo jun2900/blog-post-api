@@ -1,6 +1,7 @@
 const Post = require("../models/post.model");
 const Comment = require("../models/comment.model");
 
+//Get post detail
 exports.get_post_detail = async (req, res) => {
   const post = await Post.findById(req.params.id);
   const comments = await Comment.find({ post: { _id: post._id } });
@@ -17,15 +18,53 @@ exports.get_post_detail = async (req, res) => {
   });
 };
 
+//Get all published posts
 exports.get_all_published_posts = async (req, res) => {
-  const post = await Post.find({ publish: true });
-  res.json({
-    title: post.title,
-    date: post.date.toDateString(),
+  try {
+    const posts = await Post.find({ publish: true }, "-__v -publish");
+    let finalPosts = posts.map((post) => {
+      return {
+        title: post.title,
+        date: post.date.toDateString(),
+      };
+    });
+    res.send({
+      posts: finalPosts,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(`err internal`);
+  }
+};
+
+//Create post
+exports.create_post = (req, res) => {
+  const now = new Date();
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content,
+    publish: req.body.publish,
+    date: now,
+    user: {
+      _id: req.userId,
+    },
+  });
+
+  post.save((err) => {
+    if (err) {
+      return res.status(500).send({
+        message: "Invalid input",
+      });
+    }
+    console.log("Post created");
+  });
+
+  res.send({
+    post,
   });
 };
 
-exports.create_post = async (req, res) => {
+exports.update_post = (req, res) => {
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
@@ -36,11 +75,10 @@ exports.create_post = async (req, res) => {
     },
   });
 
-  post.save((err) => {
+  Post.findByIdAndUpdate(req.params.id, post, {}, (err, thePost) => {
     if (err) {
-      return res.status(500).send({
-        message: "Invalid input",
-      });
+      return res.send(err);
     }
+    res.send(thePost);
   });
 };
