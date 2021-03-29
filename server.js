@@ -20,6 +20,7 @@ db.on("error", console.error.bind(console, "MongoDB connection error"));
 //Main route
 require("./routes/auth.routes")(app);
 require("./routes/post.routes")(app);
+require("./routes/comment.routes")(app);
 
 app.listen(port, () => {
   console.log(`Your listening to http://localhost:${port}`);

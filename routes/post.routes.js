@@ -1,5 +1,5 @@
 const controller = require("../controllers/post.controller");
-const { authJWT, verifyDatabase } = require("../middleware");
+const { authJWT, verifyDatabase, validator } = require("../middleware");
 
 module.exports = (app) => {
   app.use((req, res, next) => {
@@ -14,7 +14,15 @@ module.exports = (app) => {
   app.get("/", controller.get_all_published_posts);
 
   //Create post
-  app.post("/post/create", authJWT.verifyToken, controller.create_post);
+  app.post(
+    "/post/create",
+    [
+      authJWT.verifyToken,
+      validator.validateSanitisePost,
+      validator.validateErrors,
+    ],
+    controller.create_post
+  );
 
   //Get detailed posts
   app.get("/post/:id", controller.get_post_detail);
@@ -22,7 +30,12 @@ module.exports = (app) => {
   //Update post
   app.put(
     "/post/:id",
-    [authJWT.verifyToken, verifyDatabase.authorizedUser],
+    [
+      authJWT.verifyToken,
+      verifyDatabase.authorizedUser,
+      validator.validateSanitisePost,
+      validator.validateErrors,
+    ],
     controller.update_post
   );
 

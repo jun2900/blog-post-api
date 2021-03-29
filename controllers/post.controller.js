@@ -3,33 +3,24 @@ const Comment = require("../models/comment.model");
 
 //Get post detail
 exports.get_post_detail = async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  const post = await Post.findById(req.params.id).populate("user");
   const comments = await Comment.find({ post: { _id: post._id } });
   res.json({
     title: post.title,
     post_content: post.content,
     publish: post.publish,
     date: post.date.toDateString(),
-    comment: [
-      {
-        comment_content: comments.content,
-      },
-    ],
+    user: post.user.username,
+    comments,
   });
 };
 
 //Get all published posts
 exports.get_all_published_posts = async (req, res) => {
   try {
-    const posts = await Post.find({ publish: true }, "-__v -publish");
-    let finalPosts = posts.map((post) => {
-      return {
-        title: post.title,
-        date: post.date.toDateString(),
-      };
-    });
+    const posts = await Post.find({ publish: true }, "-__v");
     res.send({
-      posts: finalPosts,
+      posts,
     });
   } catch (err) {
     console.log(err);
@@ -84,13 +75,20 @@ exports.update_post = (req, res) => {
   });
 };
 
-exports.delete_post = (req, res) => {
-  Post.findByIdAndDelete(req.params.id, (err) => {
-    if (err) {
-      return res.status(500).send({
-        message: err,
-      });
+exports.delete_post = async (req, res) => {
+  try {
+    await Post.findByIdAndDelete(req.params.id).exec();
+    const comment = await Comment.find({ post: { _id: req.params.id } });
+
+    if (comment) {
+      await Comment.deleteMany({ post: { _id: req.params.id } });
     }
     res.send({ message: `Post has been deleted` });
-  });
+  } catch (err) {
+    if (err) {
+      return res.status(500).send({
+        message: `Error: ${err}`,
+      });
+    }
+  }
 };

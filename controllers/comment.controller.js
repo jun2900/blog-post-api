@@ -5,6 +5,7 @@ exports.create_comment = (req, res) => {
   const comment = new Comment({
     content: req.body.content,
     post: req.params.id,
+    user: req.userId,
   });
 
   comment.save((err) => {
