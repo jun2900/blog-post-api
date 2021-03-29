@@ -13,11 +13,11 @@ module.exports = (app) => {
   //Get all published posts
   app.get("/", controller.get_all_published_posts);
 
-  //Get detailed posts
-  app.get("/post/:id", controller.get_post_detail);
-
   //Create post
   app.post("/post/create", authJWT.verifyToken, controller.create_post);
+
+  //Get detailed posts
+  app.get("/post/:id", controller.get_post_detail);
 
   //Update post
   app.put(

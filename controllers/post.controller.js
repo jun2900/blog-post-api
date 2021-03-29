@@ -64,6 +64,7 @@ exports.create_post = (req, res) => {
   });
 };
 
+//Update post
 exports.update_post = (req, res) => {
   const post = new Post({
     title: req.body.title,
