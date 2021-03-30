@@ -27,6 +27,9 @@ module.exports = (app) => {
   //Get detailed posts
   app.get("/post/:id", controller.get_post_detail);
 
+  //Get all posts associated to a user
+  app.get("/user/posts", authJWT.verifyToken, controller.get_user_posts);
+
   //Update post
   app.put(
     "/post/:id",
