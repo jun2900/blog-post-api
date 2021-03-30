@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 const Post = require("../models/post.model");
+const User = require("../models/user.model");
 
 authorizedUser = async (req, res, next) => {
   try {
@@ -16,8 +17,17 @@ authorizedUser = async (req, res, next) => {
   }
 };
 
+checkDuplicateEmail = async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (user) {
+    return res.status(400).send({ message: `Email is already used` });
+  }
+  next();
+};
+
 const verifyDatabase = {
   authorizedUser: authorizedUser,
+  checkDuplicateEmail: checkDuplicateEmail,
 };
 
 module.exports = verifyDatabase;
